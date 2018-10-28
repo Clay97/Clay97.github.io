@@ -220,7 +220,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>android:layout_width</strong>和<strong>android:Layout_heigh</strong>属性中match_parent<br> 和fill_parent的意义相同，推荐使用match_parent 表示让当前的控件<br> 的大小和父布局的大小一样，也就是由父布局来决定当前控件的大小，<br> wrap_content表示让当前控件的大小能够刚好包含住里面的内容。<br> <strong>android:gravity</strong>属性中可用 | 来指定多个值，center效果等同于<br> center_vertical | center_horizontal,表示文字在垂直和水平方向都居中对齐。</p>
+<p><strong>android:layout_width</strong>和<strong>android:Layout_heigh</strong>属性中match_parent和fill_parent的意义相同，推荐使用match_parent 表示让当前的控件的大小和父布局的大小一样，也就是由父布局来决定当前控件的大小，wrap_content表示让当前控件的大小能够刚好包含住里面的内容。<br><strong>android:gravity</strong>属性中可用 | 来指定多个值，center效果等同于 center_vertical | center_horizontal,表示文字在垂直和水平方向都居中对齐。</p>
 <h1 id="2-EditView"><a href="#2-EditView" class="headerlink" title="2. EditView"></a>2. EditView</h1><p>EditView是Android系统中的编辑框，可以理解为可编辑的TextView，用法和属性都和TextView相似。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">EditText</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/edit_text"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:Layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:hint</span>=<span class="string">"Type something here"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:maxLines</span>=<span class="string">"2"</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
 <table>
 <thead>
@@ -340,7 +340,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>scaleType</strong>的属性有好几种，分别是matrix（默认）、center、centerCrop、centerInside、fitCenter、fitEnd、fitStart、fitXY。其中fitXY表示把原图按照指定的大小在View中显示，拉伸显示图片，不保持原比例，填满ImageView。<br>对于其他属性我就不为大家进行一一介绍，感兴趣的可以自己了解一下。</p>
+<p><strong>scaleType</strong>的属性有好几种，分别是matrix（默认）、center、centerCrop、centerInside、fitCenter、fitEnd、fitStart、fitXY。其中fitXY表示把原图按照指定的大小在View中显示，拉伸显示图片，不保持原比例，填满ImageView。对于其他属性我就不为大家进行一一介绍，感兴趣的可以自己了解一下。</p>
 
       
 
