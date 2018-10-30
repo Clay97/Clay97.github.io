@@ -303,7 +303,45 @@
 </table>
 <p>在使用button时我们需要在Activity中为Button的点击事件注册一个监听器，在之后的文章中我们在进行介绍。</p>
 <h1 id="4-ImageButton"><a href="#4-ImageButton" class="headerlink" title="4. ImageButton"></a>4. ImageButton</h1><p>ImageButton和Button类似，是一个按钮，ImageButton可以实现我们任何想要的图片按钮的效果。它要比button实现的要好看，并且体验要好很多, 不过它是以图片作为背景，没有文字。利用属性android:src=”图片位置”来设置图片背景。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ImageButton</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:id</span> = <span class="string">"@+id/image_button"</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag"><span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span> </span></span><br><span class="line"><span class="tag"><span class="attr">android:scaleType</span>=<span class="string">"fitXY"</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:src</span> =<span class="string">"@drawable/beautiful"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ImageButton</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:id</span> = <span class="string">"@+id/image_button"</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag"><span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span> </span></span><br><span class="line"><span class="tag"><span class="attr">android:scaleType</span>=<span class="string">"fitXY"</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:src</span> =<span class="string">"@drawable/***"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">常用属性</th>
+<th style="text-align:center">说明</th>
+<th style="text-align:center">常用值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">android:id</td>
+<td style="text-align:center">给当前控件指定唯一的标识符</td>
+<td style="text-align:center">自定义</td>
+</tr>
+<tr>
+<td style="text-align:center">android:layout_width</td>
+<td style="text-align:center">指定控件的宽度</td>
+<td style="text-align:center">match_parent、fill_parent、wrap_content、像素</td>
+</tr>
+<tr>
+<td style="text-align:center">android:Layout_heigh</td>
+<td style="text-align:center">指定控件的高度</td>
+<td style="text-align:center">match_parent、fill_parent、wrap_content、像素</td>
+</tr>
+<tr>
+<td style="text-align:center">android:src</td>
+<td style="text-align:center">指定图片来源</td>
+<td style="text-align:center">自定义</td>
+</tr>
+<tr>
+<td style="text-align:center">android:scaleType</td>
+<td style="text-align:center">指定图片在imagebutton中自适应方式</td>
+<td style="text-align:center">自定义</td>
+</tr>
+</tbody>
+</table>
+<p>控件大小可以具体设置高度和宽度显示的像素，不过这样设置如果图片尺寸大于设置的显示的尺寸，则图片是显示不全的,可以配合<strong>scaleType</strong>，它的的属性有好几种，分别是matrix（默认）、center、centerCrop、centerInside、fitCenter、fitEnd、fitStart、fitXY。其中fitXY表示把原图按照指定的大小在View中显示，拉伸显示图片，不保持原比例，填满ImageView。对于其他属性我就不为大家进行一一介绍，感兴趣的可以自己了解一下。</p>
+<h1 id="5-RadioButton与RadioGroup"><a href="#5-RadioButton与RadioGroup" class="headerlink" title="5. RadioButton与RadioGroup"></a>5. RadioButton与RadioGroup</h1><p>RadioButton(单选按钮)在 Android 平台上也比较常用,比如一些选择项会用到单选按钮。它是一种单个圆形单选框双状态的按钮,可以选择或不选择。在 RadioButton 没有 被选中时,用户通过单击来选中它。但是,在选中后,无法通过单击取消选中。<br>RadioGroup 是单选组合框,用于 将 RadioButton 框起来。在多个 RadioButton被 RadioGroup 包含的情况下,同一时刻只可以选择一个 RadioButton。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">RadioGroup</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/radio_group"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"horizontal"</span> &gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">RadioButton</span> </span></span><br><span class="line"><span class="tag">               <span class="attr">android:id</span>=<span class="string">"@+id/rd1"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span>         </span></span><br><span class="line"><span class="tag">               <span class="attr">android:text</span>=<span class="string">"北京"</span>   </span></span><br><span class="line"><span class="tag">               <span class="attr">android:textSize</span>=<span class="string">"30sp"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:textColor</span>=<span class="string">"#FF0000"</span></span></span><br><span class="line"><span class="tag">                /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">RadioButton</span> </span></span><br><span class="line"><span class="tag">               <span class="attr">android:id</span>=<span class="string">"@+id/rd2"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:textSize</span>=<span class="string">"30sp"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:text</span>=<span class="string">"上海"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">RadioGroup</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <table>
 <thead>
 <tr>
@@ -329,6 +367,96 @@
 <td style="text-align:center">match_parent、fill_parent、wrap_content</td>
 </tr>
 <tr>
+<td style="text-align:center">android:orientation</td>
+<td style="text-align:center">指定按排列方式</td>
+<td style="text-align:center">水平排列horizontal或垂直排列vertical</td>
+</tr>
+<tr>
+<td style="text-align:center">android:text</td>
+<td style="text-align:center">设置文字提示</td>
+<td style="text-align:center">自定义</td>
+</tr>
+<tr>
+<td style="text-align:center">android:textSize</td>
+<td style="text-align:center">指定文字大小</td>
+<td style="text-align:center">自定义</td>
+</tr>
+<tr>
+<td style="text-align:center">android:textColor</td>
+<td style="text-align:center">指定文字颜色</td>
+<td style="text-align:center">自定义</td>
+</tr>
+</tbody>
+</table>
+<h1 id="6-CheckBox"><a href="#6-CheckBox" class="headerlink" title="6. CheckBox"></a>6. CheckBox</h1><p>CheckBox(复选按钮),顾名思义是一种可以进行多选的按钮,默认以矩形表示。与 RadioButton 相同,它也有选中或者不选中双状态。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">CheckBox</span> </span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/cb1"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:text</span>=<span class="string">"北京"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:textSize</span>=<span class="string">"30sp"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:textColor</span>=<span class="string">"#0000FF"</span></span></span><br><span class="line">&lt;CheckBox </span><br><span class="line">    android:id="@+id/cb2"</span><br><span class="line">    android:layout_width="match_parent"</span><br><span class="line">    android:layout_height="wrap_content"</span><br><span class="line">    android:text="上海"</span><br><span class="line">    android:textSize="30sp"</span><br><span class="line">    android:textColor="#0000FF"/&gt;</span><br></pre></td></tr></table></figure></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">常用属性</th>
+<th style="text-align:center">说明</th>
+<th style="text-align:center">常用值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">android:id</td>
+<td style="text-align:center">给当前控件指定唯一的标识符</td>
+<td style="text-align:center">自定义</td>
+</tr>
+<tr>
+<td style="text-align:center">android:layout_width</td>
+<td style="text-align:center">指定控件的宽度</td>
+<td style="text-align:center">match_parent、fill_parent、wrap_content</td>
+</tr>
+<tr>
+<td style="text-align:center">android:Layout_heigh</td>
+<td style="text-align:center">指定控件的高度</td>
+<td style="text-align:center">match_parent、fill_parent、wrap_content</td>
+</tr>
+<tr>
+<td style="text-align:center">android:text</td>
+<td style="text-align:center">设置文字提示</td>
+<td style="text-align:center">自定义</td>
+</tr>
+<tr>
+<td style="text-align:center">android:textSize</td>
+<td style="text-align:center">指定文字大小</td>
+<td style="text-align:center">自定义</td>
+</tr>
+<tr>
+<td style="text-align:center">android:textColor</td>
+<td style="text-align:center">指定文字颜色</td>
+<td style="text-align:center">自定义</td>
+</tr>
+</tbody>
+</table>
+<h1 id="7-ImageView"><a href="#7-ImageView" class="headerlink" title="7. ImageView"></a>7. ImageView</h1><p>ImageView 是一个图片控件,负责显示图片，图片的来源可以是系统提供的资源文件,也可以是 Drawable 对象，它与前面我们讲过的ImageButton很多属性都是相同的。 </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ImageView=</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:id</span> = <span class="string">"@+id/xxx"</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span> </span></span><br><span class="line"><span class="tag"><span class="attr">android:scaleType</span>=<span class="string">"fitXY"</span></span></span><br><span class="line"><span class="tag"><span class="attr">android:src</span> =<span class="string">"@drawable/***"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">常用属性</th>
+<th style="text-align:center">说明</th>
+<th style="text-align:center">常用值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">android:id</td>
+<td style="text-align:center">给当前控件指定唯一的标识符</td>
+<td style="text-align:center">自定义</td>
+</tr>
+<tr>
+<td style="text-align:center">android:layout_width</td>
+<td style="text-align:center">指定控件的宽度</td>
+<td style="text-align:center">match_parent、fill_parent、wrap_content、像素</td>
+</tr>
+<tr>
+<td style="text-align:center">android:Layout_heigh</td>
+<td style="text-align:center">指定控件的高度</td>
+<td style="text-align:center">match_parent、fill_parent、wrap_content、像素</td>
+</tr>
+<tr>
 <td style="text-align:center">android:src</td>
 <td style="text-align:center">指定图片来源</td>
 <td style="text-align:center">自定义</td>
@@ -340,7 +468,45 @@
 </tr>
 </tbody>
 </table>
-<p><strong>scaleType</strong>的属性有好几种，分别是matrix（默认）、center、centerCrop、centerInside、fitCenter、fitEnd、fitStart、fitXY。其中fitXY表示把原图按照指定的大小在View中显示，拉伸显示图片，不保持原比例，填满ImageView。对于其他属性我就不为大家进行一一介绍，感兴趣的可以自己了解一下。</p>
+<h1 id="8-ProgressBar"><a href="#8-ProgressBar" class="headerlink" title="8. ProgressBar"></a>8. ProgressBar</h1><p>ProgressBar 用于在界面上显示一个进度条,表示我们的程序正在加载一些数据，当程序运行后，会看到屏幕中有一个圆形进度条正在旋转。  </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ProgressBar</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/progress_bar"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:Layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"?android:attr/progressBarStyleHorizontal"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:max</span>=<span class="string">"100"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">常用属性</th>
+<th style="text-align:center">说明</th>
+<th style="text-align:center">常用值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">android:id</td>
+<td style="text-align:center">给当前控件指定唯一的标识符</td>
+<td style="text-align:center">自定义</td>
+</tr>
+<tr>
+<td style="text-align:center">android:layout_width</td>
+<td style="text-align:center">指定控件的宽度</td>
+<td style="text-align:center">match_parent、fill_parent、wrap_content、像素</td>
+</tr>
+<tr>
+<td style="text-align:center">android:Layout_heigh</td>
+<td style="text-align:center">指定控件的高度</td>
+<td style="text-align:center">match_parent、fill_parent、wrap_content、像素</td>
+</tr>
+<tr>
+<td style="text-align:center">style</td>
+<td style="text-align:center">设置进度条样式</td>
+<td style="text-align:center">默认为圆形、progressBarStyleHorizontal（水平进度条）</td>
+</tr>
+<tr>
+<td style="text-align:center">android:max</td>
+<td style="text-align:center">设置进度条最大值</td>
+<td style="text-align:center">自定义</td>
+</tr>
+</tbody>
+</table>
+<p>至此，关于Android的常用控件都已经大概介绍了一遍，希望能够对大家有所帮助。</p>
 
       
 
