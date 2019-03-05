@@ -152,6 +152,83 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Android第一行代码 酷欧天气总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/04/Android第一行代码 酷欧天气总结/">Android第一行代码 酷欧天气总结</a>
+    </h1>
+  
+
+        
+        <a href="/2019/03/04/Android第一行代码 酷欧天气总结/" class="archive-article-date">
+  	<time datetime="2019-03-04T01:36:02.334Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>距离上次写博客大概已经过了半年了，期间一直在在学习《第一行代码》，<br>前几天用了一周多了时间把最后的酷欧天气项目完成了，总体来说还是顺利的，<br>中间遇到了一些困难，这里就在这里总结一下，希望对大家的学习有所帮助，代码在我的GitHub上<a href="https://github.com/Clay97/coolweather" target="_blank" rel="noopener">酷欧天气</a>，如果有需要大家可以下载参考，有什么错误也请大家能够指出来，我们一起学习。  </p>
+<h2 id="1-目录结构"><a href="#1-目录结构" class="headerlink" title="1. 目录结构"></a>1. 目录结构</h2><p><strong>db</strong>:用于存放数据库模型相关的代码<br><strong>gson</strong>:用于存放GSON模型相关的代码<br><strong>service</strong>:用于存放服务相关的代码<br><strong>util</strong>:用于存放工具相关的代码</p>
+<h2 id="2-创建数据库和表"><a href="#2-创建数据库和表" class="headerlink" title="2. 创建数据库和表"></a>2. 创建数据库和表</h2><p>在创建数据库和表之前，在<strong>app/build.gradle</strong>中声明项目所需的各种依赖。<strong>OkHtttp</strong>用于进行网络请求，<strong>GSON</strong>用于解析JSON数据，<strong>Glide</strong>用于加载和展示图片。<br>这部分的内容比较简单，大家只需要按照书的内容一步一步来就可以了，首先创建Provincce,City,County这3个类并继承DataSupport，然后新建assets目录，创建 litepal.xml资源文件，用于创建数据库名称、数据库版本、表名、数据库存放的位置，最后再配置LitePalApplication。</p>
+<h2 id="3-遍历全国省市县数据"><a href="#3-遍历全国省市县数据" class="headerlink" title="3. 遍历全国省市县数据"></a>3. 遍历全国省市县数据</h2><p>全国省市县的数据都需要从服务器端获取，因此首先在util包下创建一个HttpUtil类<br>(<code>)  
+  public class HttpUtil {
+    public  static  void sendOkHttpRequest(String address,okhttp3.Callback callback){
+        OkHttpClient client =new OkHttpClient();
+        Request request = new Request.Builder().url(address).build();
+        client.newCall(request).enqueue(callback);
+    }
+}
+(</code>)<br>这样我们只需要传入请求地址，并注册一个回调来处理服务器响应就可以了。<br>由于服务器返回的都是JSON数据，创建Utility用于解析数据，注意调用save（）方法对数据进行保存，我第一次就是在这里栽了跟头，所以大家写代码的时候还是要细心一点。这部并没有什么难点，只需要照书上的代码就可以了。另外因为向服务器发起请求需要联网，所以必须在AndroidManifest.xml中进行网络的权限声明。</p>
+<h2 id="4-显示天气信息"><a href="#4-显示天气信息" class="headerlink" title="4. 显示天气信息"></a>4. 显示天气信息</h2><p>这部分大概是最难的地方，当我按照书上代码解析数据时，总是闪退，后来通过搜索发现书上用的api已经过时了，所以解析不出来数据导致报错，于是我查找了官方文档，找到了相应的api，因为解析的数据有所不同，所以必须重新定义GSON实体类用于解析，相对与书本上的api，官方最新的实况天气的api相对简单，并没有预报和建议，于是我便添加了空气质量实况的api，定义了GSON实体类并解析数据，解析过程和书上的weather类似，大家可以参考我的代码。<br>另外api中请求URL需要传入key值，这里的key是我们在注册完和风天气后在应用管理里面添加的key，在添加的时候key的类型要要选择成<strong>Web API</strong> 否则无法返回数据。<br>在遍历空气质量实况中的数据时，通过inflater获取了view,然后在获取的组件的时候，我习惯性的直接用 findViewByid() 之后在向组件中添加信息的时候总是报空指针异常，后来经过反复检查才发现问题，获取控件的时候应该调用 <strong>view.findViewById()</strong>,写代码的时候不能随心所以，不可有一点马虎，否则就将造成打错。<br>后面获取每日一图就相对容易一点，使用Glide就可以简单的解决。</p>
+<h2 id="5-手动更新天气和切换城市"><a href="#5-手动更新天气和切换城市" class="headerlink" title="5. 手动更新天气和切换城市"></a>5. 手动更新天气和切换城市</h2><p>这里首先运用了下拉刷新，下拉时重新请求服务器，数据解析完毕加载页面后关闭下拉刷新，隐藏进度条，整体的逻辑还是比较清楚的。<br>切换城市运用了DrawerLayout,DrawerLayout中第一个子控件用于作为主屏幕中的内容，我们把SwipeRefreshLayout添加进去，第二个子控件作为滑动菜单显示的内容，只需要把第二个子控件的位置添加用于便利省市县数据的碎片。之后重写碎片中的代码就可以了。<br>但是我发现当我手动选择完城市立即下拉刷新的时候，界面中显示的内容会变成刷新之前的城市的数据，通过对代码的观察，我发现下拉刷新调用的 requestWeather(mWeatherId) 中mWeatherId 并没有给他重新赋值，所以他还是原来城市的id，于是我在requestWeather(final String weatherid)方法中加入了 mWeatherId =weatherid; 因为选择县之后也会调用这个方法，这样我们就可以把新的县的id传入到这个全局变量中，从而使id变成选中之后的id。</p>
+<h2 id="6-后台自动更新天气并修改图标和用户名称"><a href="#6-后台自动更新天气并修改图标和用户名称" class="headerlink" title="6. 后台自动更新天气并修改图标和用户名称"></a>6. 后台自动更新天气并修改图标和用户名称</h2><p>这部分内容包括更新天气和每日一图，只需要设置闹钟，重新解析数据并启动服务就可以了。至于修改图标和用户名就更简单不过了，相信大家一点也不会陌生。<br>当然除了这些内容，还有很多内容可以去扩展，毕竟比起网上一些有关天气的app，我们的应用还是太过于简单。<br>到这里我的总结也算是完成了，希望对大家有所帮助，也请大家提出宝贵的建议，毕竟我也是第一次写博客，还是个菜鸟很多的地方还是不懂，谢谢大家。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/03/04/Android第一行代码 酷欧天气总结/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Android常见控件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -630,7 +707,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 clay
+    		&copy; 2019 clay
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
