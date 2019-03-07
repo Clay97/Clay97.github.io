@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="clowns laughing at you">
 <meta property="og:description" content="距离上次写博客大概已经过了半年了，期间一直在在学习《第一行代码》，前几天用了一周多了时间把最后的酷欧天气项目完成了，总体来说还是顺利的，中间遇到了一些困难，这里就在这里总结一下，希望对大家的学习有所帮助，代码在我的GitHub上酷欧天气，如果有需要大家可以下载参考，有什么错误也请大家能够指出来，我们一起学习。   1. 目录结构db:用于存放数据库模型相关的代码gson:用于存放GSON模型相关的">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-05T03:46:33.015Z">
+<meta property="og:updated_time" content="2019-03-07T14:14:44.773Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android第一行代码 酷欧天气总结">
 <meta name="twitter:description" content="距离上次写博客大概已经过了半年了，期间一直在在学习《第一行代码》，前几天用了一周多了时间把最后的酷欧天气项目完成了，总体来说还是顺利的，中间遇到了一些困难，这里就在这里总结一下，希望对大家的学习有所帮助，代码在我的GitHub上酷欧天气，如果有需要大家可以下载参考，有什么错误也请大家能够指出来，我们一起学习。   1. 目录结构db:用于存放数据库模型相关的代码gson:用于存放GSON模型相关的">
@@ -176,7 +176,7 @@
       
         <p>距离上次写博客大概已经过了半年了，期间一直在在学习《第一行代码》，<br>前几天用了一周多了时间把最后的酷欧天气项目完成了，总体来说还是顺利的，<br>中间遇到了一些困难，这里就在这里总结一下，希望对大家的学习有所帮助，代码在我的GitHub上<a href="https://github.com/Clay97/coolweather" target="_blank" rel="noopener">酷欧天气</a>，如果有需要大家可以下载参考，有什么错误也请大家能够指出来，我们一起学习。  </p>
 <h2 id="1-目录结构"><a href="#1-目录结构" class="headerlink" title="1. 目录结构"></a>1. 目录结构</h2><p><strong>db</strong>:用于存放数据库模型相关的代码<br><strong>gson</strong>:用于存放GSON模型相关的代码<br><strong>service</strong>:用于存放服务相关的代码<br><strong>util</strong>:用于存放工具相关的代码</p>
-<h2 id="2-创建数据库和表"><a href="#2-创建数据库和表" class="headerlink" title="2. 创建数据库和表"></a>2. 创建数据库和表</h2><p>在创建数据库和表之前，在<strong>app/build.gradle</strong>中声明项目所需的各种依赖。<strong>OkHtttp</strong>用于进行网络请求，<strong>GSON</strong>用于解析JSON数据，<strong>Glide</strong>用于加载和展示图片。<br>这部分的内容比较简单，大家只需要按照书的内容一步一步来就可以了，首先创建Provincce,City,County这3个类并继承DataSupport，然后新建assets目录，创建 litepal.xml资源文件，用于创建数据库名称、数据库版本、表名、数据库存放的位置，最后再配置LitePalApplication。</p>
+<h2 id="2-创建数据库和表"><a href="#2-创建数据库和表" class="headerlink" title="2. 创建数据库和表"></a>2. 创建数据库和表</h2><p>在创建数据库和表之前，在<strong>app/build.gradle</strong>中声明项目所需的各种依赖。<strong>OkHtttp</strong>用于进行网络请求，<strong>GSON</strong>用于解析JSON数据，<strong>Glide</strong>用于加载和展示图片。  这部分的内容比较简单，大家只需要按照书的内容一步一步来就可以了，首先创建Provincce,City,County这3个类并继承DataSupport，然后新建assets目录，创建 litepal.xml资源文件，用于创建数据库名称、数据库版本、表名、数据库存放的位置，最后再配置LitePalApplication。</p>
 <h2 id="3-遍历全国省市县数据"><a href="#3-遍历全国省市县数据" class="headerlink" title="3. 遍历全国省市县数据"></a>3. 遍历全国省市县数据</h2><p>全国省市县的数据都需要从服务器端获取，因此首先在util包下创建一个HttpUtil类  </p>
 <pre><code>  public class HttpUtil {
     public  static  void sendOkHttpRequest(String address,okhttp3.Callback callback){
@@ -281,6 +281,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2019/03/07/安卓文件存储中遇到的问题/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
   
   
     <a href="/2018/07/01/Android常见控件/" id="article-nav-older" class="article-nav-link-wrap">
