@@ -89,29 +89,96 @@
       
         <p>大家好，我又回来了，在这消失的两个多月期间，一直在备战软考程序设计师，不管最终结果如何，我在这两个月期间学到了很多东西，而且还接触了python开始了自己的爬虫生涯。<br>今天就和大家分享《Python 3网络爬虫开发实战》上关于爬取今日头条街拍美图的爬虫。由于书本是两年前发布的，网站的的Ajax发生了变化，但是分析起来也并没有想象的那么复杂，接下来我就大家一起来分析一下这个案列，代码已经上传到我的<a href="https://github.com/Clay97/toutiao" target="_blank" rel="noopener">github</a>欢迎大家参考并提出意见。<br>首先，我们打开<a href="https://www.toutiao.com/" target="_blank" rel="noopener">今日头条</a>并在右上角的搜索入口输入街拍进行搜索。这时打开开发者工具，切换至Network，并选中XHR，接着下拉网页，便会出现很多请求，这就是我们需要分析的Ajax。  </p>
 <p><img src="/images/jiepai.png" alt=""></p>
-<p>通过对比多个请求参数，我们可以其中变化的只有<strong>offset</strong>和<strong>timestamp</strong>，其中offset是偏移量，timestamp是毫秒级别的时间戳，可以通过<strong>int(time.time*1000)</strong>获得。接下来我们就构造请求来访问网页。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">	def get_page(offsetp):</span><br><span class="line">	#offstep 作为参数传入</span><br><span class="line">    t = time.time()</span><br><span class="line">    #时间戳</span><br><span class="line">    timestamp = int(t * 1000)</span><br><span class="line">    params = &#123;</span><br><span class="line">        &apos;aid&apos;: 24,</span><br><span class="line">        &apos;app_name&apos;: &apos;web_search&apos;,</span><br><span class="line">        &apos;offset&apos;: offsetp,</span><br><span class="line">        &apos;format&apos;: &apos;json&apos;,</span><br><span class="line">        &apos;keyword&apos;: &apos;街拍&apos;,</span><br><span class="line">        &apos;autoload&apos;: &apos;true&apos;,</span><br><span class="line">        &apos;count&apos;: 20,</span><br><span class="line">        &apos;en_qc&apos;: 1,</span><br><span class="line">        &apos;cur_tab&apos;: 1,</span><br><span class="line">        &apos;from&apos;: &apos;search_tab&apos;,</span><br><span class="line">        &apos;timestamp&apos;: timestamp</span><br><span class="line">    &#125;</span><br><span class="line">    #请求头中Cookie是必须的，否则无法返回预期的json数据</span><br><span class="line">    headers = &#123;</span><br><span class="line">        &apos;User-Agent&apos;: &apos;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0&apos;,</span><br><span class="line">        &apos;Cookie&apos;: &apos;tt_webid=6698224417073694219; UM_distinctid=16b1c89b4891dc-07c5eab40102ac-4c312d7d-100200-16b1c89b48a400; csrftoken=f2f895fa787b16b95088a70f7de231c9; __tasessionId=v9ffxsrfd1559551950358; CNZZDATA1259612802=1433961361-1559551484-https%253A%252F%252Flanding.toutiao.com%252F%7C1559551484; s_v_web_id=72ad7620bc7eee5c573a2fe6966db22e&apos;</span><br><span class="line">    &#125;</span><br><span class="line">    try:</span><br><span class="line">        r = requests.get(&apos;https://www.toutiao.com/api/search/content/?&apos;, headers=headers, params=params)</span><br><span class="line">        if r.status_code == 200:</span><br><span class="line">            return r.json()</span><br><span class="line">    except requests.ConnectionError :</span><br><span class="line">        return None</span><br><span class="line">```  </span><br><span class="line">偏移量offset作为参数传递，时间戳通过time方法生成，其中headers中Cookit参数是必不可少的，否则无法返回预期的json数据，最后通过requests进行请求，如果返回状态码200，则调用response的json()方法将结果转为json格式。  </span><br><span class="line">接下来实现解析方法，保存图片链接，并和图片所属的标题一起返回，此时构造一个生成器。</span><br></pre></td></tr></table></figure></p>
-<pre><code>def get_images(json):
-if json.get(&apos;data&apos;):
-    for item in json.get(&apos;data&apos;):
-        title = item.get(&apos;title&apos;)
-        if (title == None):
-            continue
-        images = item.get(&apos;image_list&apos;)
-        for image in images:
-            yield {
-                &apos;image&apos;: image.get(&apos;url&apos;),
-                &apos;title&apos;: title
-            }
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">分析返回的json数据，发现所有图片的标题和链接都在**data**下，获取data并遍历，其中&apos;title&apos;字段保存了标题，其中标题为None的通常不是我们所需要的信息，直接跳过。最后通过&apos;image_list&apos;字段获取url列表，通过遍历构造生成器。  </span><br><span class="line">接下来实现对图片的保存，在该方法中，首先根据item的title来创建文件夹，创建文件中出现异常直接返回，然后请求图片链接，获取图片二进制数据，以二进制形式写入文件。图片名称使用内容的md5值，达到去重目的。</span><br></pre></td></tr></table></figure>
-<p>def save_image(item):<br>    title = item.get(‘title’)<br>    if not os.path.exists(title):<br>        try:<br>            os.mkdir(title)<br>        except Exception as e:<br>            print(e)<br>            return<br>    try:<br>        response = requests.get(item.get(‘image’))<br>        if response.status_code == 200:<br>            file_path = ‘{0}/{1}.{2}’.format(title,md5(response.content).hexdigest(),’jpg’)<br>            if not os.path.exists(file_path):<br>                with open(file_path,’wb’) as f:<br>                    f.write(response.content)<br>            else:<br>                print(‘Aready Download’,file_path)<br>    except requests.ConnectionError :<br>        print(“Failed to save image”)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">最后，构造函数来遍历offset，提取图片链接，并下载：</span><br></pre></td></tr></table></figure></p>
-<p>def main(offset):<br>    print(offset)<br>    json = get_page(offset)<br>    for item in get_images(json):<br>        print(item)<br>        save_image(item)<br>        time.sleep(1)</p>
-<p>if  <strong>name</strong> == “<strong>main</strong>“:<br>    pool = Pool()<br>    pool.map(main, [i*20 for i in range(10)])<br>    pool.close()<br>    pool.join()<br>    print(“OK”)</p>
-<p><code>`</code><br>至此整个项目就完成了，最后我发现想爬取其他内容的图片，只需要将params中<strong>keyword</strong>的值修改即可，又兴趣的可以进行尝试，谢谢大家的阅读。</p>
+<p>通过对比多个请求参数，我们可以其中变化的只有<strong>offset</strong>和<strong>timestamp</strong>，其中offset是偏移量，timestamp是毫秒级别的时间戳，可以通过<strong>int(time.time*1000)</strong>获得。接下来我们就构造请求来访问网页。    </p>
+<pre><code class="python"><span class="function"><span class="keyword">def</span> <span class="title">get_page</span><span class="params">(offsetp)</span>:</span>
+    <span class="comment">#offstep 作为参数传入</span>
+    t = time.time()
+    <span class="comment">#时间戳</span>
+    timestamp = int(t * <span class="number">1000</span>)
+    params = {
+        <span class="string">'aid'</span>: <span class="number">24</span>,
+        <span class="string">'app_name'</span>: <span class="string">'web_search'</span>,
+        <span class="string">'offset'</span>: offsetp,
+        <span class="string">'format'</span>: <span class="string">'json'</span>,
+        <span class="string">'keyword'</span>: <span class="string">'街拍'</span>,
+        <span class="string">'autoload'</span>: <span class="string">'true'</span>,
+        <span class="string">'count'</span>: <span class="number">20</span>,
+        <span class="string">'en_qc'</span>: <span class="number">1</span>,
+        <span class="string">'cur_tab'</span>: <span class="number">1</span>,
+        <span class="string">'from'</span>: <span class="string">'search_tab'</span>,
+        <span class="string">'timestamp'</span>: timestamp
+    }
+    <span class="comment">#请求头中Cookie是必须的，否则无法返回预期的json数据</span>
+    headers = {
+        <span class="string">'User-Agent'</span>: <span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0'</span>,
+        <span class="string">'Cookie'</span>: <span class="string">'tt_webid=6698224417073694219; UM_distinctid=16b1c89b4891dc-07c5eab40102ac-4c312d7d-100200-16b1c89b48a400; csrftoken=f2f895fa787b16b95088a70f7de231c9; __tasessionId=v9ffxsrfd1559551950358; CNZZDATA1259612802=1433961361-1559551484-https%253A%252F%252Flanding.toutiao.com%252F%7C1559551484; s_v_web_id=72ad7620bc7eee5c573a2fe6966db22e'</span>
+    }
+    <span class="keyword">try</span>:
+        r = requests.get(<span class="string">'https://www.toutiao.com/api/search/content/?'</span>, headers=headers, params=params)
+        <span class="keyword">if</span> r.status_code == <span class="number">200</span>:
+            <span class="keyword">return</span> r.json()
+    <span class="keyword">except</span> requests.ConnectionError :
+        <span class="keyword">return</span> <span class="keyword">None</span>
+</code></pre>
+<p>偏移量offset作为参数传递，时间戳通过time方法生成，其中headers中Cookit参数是必不可少的，否则无法返回预期的json数据，最后通过requests进行请求，如果返回状态码200，则调用response的json()方法将结果转为json格式。<br>接下来实现解析方法，保存图片链接，并和图片所属的标题一起返回，此时构造一个生成器。</p>
+<pre><code class="python"><span class="function"><span class="keyword">def</span> <span class="title">get_images</span><span class="params">(json)</span>:</span>
+    <span class="keyword">if</span> json.get(<span class="string">'data'</span>):
+        <span class="keyword">for</span> item <span class="keyword">in</span> json.get(<span class="string">'data'</span>):
+            title = item.get(<span class="string">'title'</span>)
+            <span class="keyword">if</span> (title == <span class="keyword">None</span>):
+                <span class="keyword">continue</span>
+            images = item.get(<span class="string">'image_list'</span>)
+            <span class="keyword">for</span> image <span class="keyword">in</span> images:
+                <span class="keyword">yield</span> {
+                    <span class="string">'image'</span>: image.get(<span class="string">'url'</span>),
+                    <span class="string">'title'</span>: title
+                }
+
+</code></pre>
+<p>分析返回的json数据，发现所有图片的标题和链接都在<strong>data</strong>下，获取data并遍历，其中’title’字段保存了标题，其中标题为None的通常不是我们所需要的信息，直接跳过。最后通过’image_list’字段获取url列表，通过遍历构造生成器。<br>接下来实现对图片的保存，在该方法中，首先根据item的title来创建文件夹，创建文件中出现异常直接返回，然后请求图片链接，获取图片二进制数据，以二进制形式写入文件。图片名称使用内容的md5值，达到去重目的。  </p>
+<pre><code class="python"><span class="function"><span class="keyword">def</span> <span class="title">save_image</span><span class="params">(item)</span>:</span>
+    title = item.get(<span class="string">'title'</span>)
+    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(title):
+        <span class="keyword">try</span>:
+            os.mkdir(title)
+        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+            print(e)
+            <span class="keyword">return</span>
+    <span class="keyword">try</span>:
+        response = requests.get(item.get(<span class="string">'image'</span>))
+        <span class="keyword">if</span> response.status_code == <span class="number">200</span>:
+            file_path = <span class="string">'{0}/{1}.{2}'</span>.format(title,md5(response.content).hexdigest(),<span class="string">'jpg'</span>)
+            <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(file_path):
+                <span class="keyword">with</span> open(file_path,<span class="string">'wb'</span>) <span class="keyword">as</span> f:
+                    f.write(response.content)
+            <span class="keyword">else</span>:
+                print(<span class="string">'Aready Download'</span>,file_path)
+    <span class="keyword">except</span> requests.ConnectionError :
+        print(<span class="string">"Failed to save image"</span>)
+</code></pre>
+<p>最后，构造函数来遍历offset，提取图片链接，并下载：</p>
+<pre><code class="python"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">(offset)</span>:</span>
+    print(offset)
+    json = get_page(offset)
+    <span class="keyword">for</span> item <span class="keyword">in</span> get_images(json):
+        print(item)
+        save_image(item)
+        time.sleep(<span class="number">1</span>)
+
+<span class="keyword">if</span>  __name__ == <span class="string">"__main__"</span>:
+    pool = Pool()
+    pool.map(main, [i*<span class="number">20</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>)])
+    pool.close()
+    pool.join()
+    print(<span class="string">"OK"</span>)
+
+</code></pre>
+<p>至此整个项目就完成了，最后我发现想爬取其他内容的图片，只需要将params中<strong>keyword</strong>的值修改即可，又兴趣的可以进行尝试，谢谢大家的阅读。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/04/分析Ajax爬取今日头条街拍美图/" data-id="cjwhr8mvw000444uatxk6jf8g"
+      <a data-url="http://yoursite.com/2019/06/04/分析Ajax爬取今日头条街拍美图/" data-id="cjwhrjuzq00038guakr4t7a8b"
          class="article-share-link">Share</a>
       
     </footer>
@@ -163,7 +230,7 @@ if json.get(&apos;data&apos;):
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjwhr8mvz000544uasrxbpbly"
+      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjwhrjuzs00048gual6nxoozv"
          class="article-share-link">Share</a>
       
     </footer>
@@ -228,7 +295,7 @@ if json.get(&apos;data&apos;):
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjwhr8mvq000244uadt2v5l27"
+      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjwhrjuzv00058guaqjyerbq2"
          class="article-share-link">Share</a>
       
     </footer>
@@ -613,7 +680,7 @@ if json.get(&apos;data&apos;):
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjwhr8mvh000044ua22c2ai4u"
+      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjwhrjuze00008guaok5ligie"
          class="article-share-link">Share</a>
       
     </footer>
@@ -672,7 +739,7 @@ if json.get(&apos;data&apos;):
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjwhr8mvt000344uadsczvb0q"
+      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjwhrjuzm00028gua32mq4itj"
          class="article-share-link">Share</a>
       
     </footer>
