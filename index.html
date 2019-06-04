@@ -57,6 +57,87 @@
 
     
       
+        <article id="post-分析Ajax爬取今日头条街拍美图" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2019/06/04/分析Ajax爬取今日头条街拍美图/">分析Ajax爬取今日头条街拍美图</a>
+    </h2>
+  
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2019/06/04/分析Ajax爬取今日头条街拍美图/" class="article-date">
+  <time datetime="2019-06-04T06:26:11.942Z" itemprop="datePublished">2019-06-04</time>
+</a>
+        
+      </div>
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+      
+
+      
+        <p>photos: [<br>        [“<a href="http://s9.rr.itc.cn/r/wapChange/20169_3_0/a5tfgp7386222195708.jpg&quot;]" target="_blank" rel="noopener">http://s9.rr.itc.cn/r/wapChange/20169_3_0/a5tfgp7386222195708.jpg&quot;]</a><br>        ]<br>    大家好，我又回来了，在这消失的两个多月期间，一直在备战软考程序设计师，不管最终结果如何，我在这两个月期间学到了很多东西，而且还接触了python开始了自己的爬虫生涯。<br>    今天就和大家分享《Python 3网络爬虫开发实战》上关于爬取今日头条街拍美图的爬虫。由于书本是两年前发布的，网站的的Ajax发生了变化，但是分析起来也并没有想象的那么复杂，接下来我就大家一起来分析一下这个案列，代码已经上传到我的<a href="https://github.com/Clay97/toutiao" target="_blank" rel="noopener">github</a>欢迎大家参考并提出意见。<br>    首先，我们打开<a href="https://www.toutiao.com/" target="_blank" rel="noopener">今日头条</a>并在右上角的搜索入口输入街拍进行搜索。这时打开开发者工具，切换至Network，并选中XHR，接着下拉网页，便会出现很多请求，这就是我们需要分析的Ajax。<br>    <img src="jiepai.png" alt=""><br>    通过对比多个请求参数，我们可以其中变化的只有<strong>offset</strong>和<strong>timestamp</strong>，其中offset是偏移量，timestamp是毫秒级别的时间戳，可以通过<strong>int(time.time*1000)</strong>获得。接下来我们就构造请求来访问网页。</p>
+<pre><code>def get_page(offsetp):
+#offstep 作为参数传入
+t = time.time()
+#时间戳
+timestamp = int(t * 1000)
+params = {
+    &apos;aid&apos;: 24,
+    &apos;app_name&apos;: &apos;web_search&apos;,
+    &apos;offset&apos;: offsetp,
+    &apos;format&apos;: &apos;json&apos;,
+    &apos;keyword&apos;: &apos;街拍&apos;,
+    &apos;autoload&apos;: &apos;true&apos;,
+    &apos;count&apos;: 20,
+    &apos;en_qc&apos;: 1,
+    &apos;cur_tab&apos;: 1,
+    &apos;from&apos;: &apos;search_tab&apos;,
+    &apos;timestamp&apos;: timestamp
+}
+#请求头中Cookie是必须的，否则无法返回预期的json数据
+headers = {
+    &apos;User-Agent&apos;: &apos;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0&apos;,
+    &apos;Cookie&apos;: &apos;tt_webid=6698224417073694219; UM_distinctid=16b1c89b4891dc-07c5eab40102ac-4c312d7d-100200-16b1c89b48a400; csrftoken=f2f895fa787b16b95088a70f7de231c9; __tasessionId=v9ffxsrfd1559551950358; CNZZDATA1259612802=1433961361-1559551484-https%253A%252F%252Flanding.toutiao.com%252F%7C1559551484; s_v_web_id=72ad7620bc7eee5c573a2fe6966db22e&apos;
+}
+try:
+    r = requests.get(&apos;https://www.toutiao.com/api/search/content/?&apos;, headers=headers, params=params)
+    if r.status_code == 200:
+        return r.json()
+except requests.ConnectionError :
+    return None
+</code></pre><pre><code>偏移量offset作为参数传递，时间戳通过time方法生成，其中headers中Cookit参数是必不可少的，否则无法返回预期的json数据，最后通过requests进行请求，如果返回状态码200，则调用response的json()方法将结果转为json格式。
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/06/04/分析Ajax爬取今日头条街拍美图/" data-id="cjwhh1r6l0003u0uacm5jkvdw"
+         class="article-share-link">Share</a>
+      
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
         <article id="post-安卓文件存储中遇到的问题" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -93,7 +174,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjw7qo96n00034gualsz2lbl8"
+      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjwhh1r6i0001u0uanut038za"
          class="article-share-link">Share</a>
       
     </footer>
@@ -158,7 +239,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjw7qo94p00004gua9vz3lqax"
+      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjwhh1r7w0005u0uaz0plg3m1"
          class="article-share-link">Share</a>
       
     </footer>
@@ -543,7 +624,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjw7qo96900024guaj8d1h68n"
+      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjwhh1r600000u0uamesmcx9g"
          class="article-share-link">Share</a>
       
     </footer>
@@ -602,7 +683,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjw7qo96p00044gua7b7yx8sw"
+      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjwhh1r7d0004u0uavjtwqzdg"
          class="article-share-link">Share</a>
       
     </footer>
