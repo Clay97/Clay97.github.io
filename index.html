@@ -57,6 +57,59 @@
 
     
       
+        <article id="post-scrapyd部署爬虫遇到的问题" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2019/06/14/scrapyd部署爬虫遇到的问题/">scrapyd部署爬虫遇到的问题</a>
+    </h2>
+  
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2019/06/14/scrapyd部署爬虫遇到的问题/" class="article-date">
+  <time datetime="2019-06-14T07:04:46.112Z" itemprop="datePublished">2019-06-14</time>
+</a>
+        
+      </div>
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+      
+
+      
+        <p>在使用scrapyd部署查看job时出现以下错误：</p>
+<p><img src="/images/scrapyd_error.png" alt=""><br>刚开始的时候并没有太注意，后来在启动部署的爬虫是也出现这样的错误，然后便在网上查了一下并找到了解决方法：<br>1.卸载原有的Twisted<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip uninstall Twisted</span><br></pre></td></tr></table></figure></p>
+<p>2.安装Twisted以前的版本<br>直接通过pip install 安装会出现错误，所以大家可以使用.whl文件安装的方式安装。之后就可以用scrapyd部署自己的爬虫了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/06/14/scrapyd部署爬虫遇到的问题/" data-id="cjwvreu7t00008gual5qhlr9k"
+         class="article-share-link">Share</a>
+      
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
         <article id="post-分析Ajax爬取今日头条街拍美图" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -178,7 +231,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/04/分析Ajax爬取今日头条街拍美图/" data-id="cjwhrjuzq00038guakr4t7a8b"
+      <a data-url="http://yoursite.com/2019/06/04/分析Ajax爬取今日头条街拍美图/" data-id="cjwvreu8000028guau4cnmqh6"
          class="article-share-link">Share</a>
       
     </footer>
@@ -230,7 +283,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjwhrjuzs00048gual6nxoozv"
+      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjwvreua100068guahjumf11f"
          class="article-share-link">Share</a>
       
     </footer>
@@ -295,7 +348,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjwhrjuzv00058guaqjyerbq2"
+      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjwvreu8o00048guagmf8njmf"
          class="article-share-link">Share</a>
       
     </footer>
@@ -680,7 +733,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjwhrjuze00008guaok5ligie"
+      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjwvreu8q00058guay0oo2m00"
          class="article-share-link">Share</a>
       
     </footer>
@@ -739,7 +792,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjwhrjuzm00028gua32mq4itj"
+      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjwvreu8300038gua3irz2pau"
          class="article-share-link">Share</a>
       
     </footer>
