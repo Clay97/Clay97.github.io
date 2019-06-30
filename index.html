@@ -57,6 +57,82 @@
 
     
       
+        <article id="post-scrapy爬取boss直聘职位信息" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2019/06/30/scrapy爬取boss直聘职位信息/">scrapy爬取boss直聘职位信息</a>
+    </h2>
+  
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2019/06/30/scrapy爬取boss直聘职位信息/" class="article-date">
+  <time datetime="2019-06-30T02:55:06.534Z" itemprop="datePublished">2019-06-30</time>
+</a>
+        
+      </div>
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+      
+
+      
+        <p>27号下午的时候朋友说软考可以查分了，于是我便怀着忐忑的心情去官网查了一下分，说实话当时还是比较紧张的，但是看到成绩时心里总是是松了一口气（甚至还有一些小激动），最终以54分和55分的成绩通过了软件设计师的考试，两个月的学习总算是没有白费。<br>昨天又花了一下午的时间对boss直聘上有关爬虫的职位信息进行了爬取，使用的scrapy框架，项目在我的<a href="https://www.toutiao.com/" target="_blank" rel="noopener">github</a>上，大家可以参考或提出建议。  </p>
+<ol>
+<li><p>对<strong>item</strong>进行定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">class BosscrawlItem(scrapy.Item):</span><br><span class="line">    # define the fields for your item here like:</span><br><span class="line">    # name = scrapy.Field()</span><br><span class="line">    #职位名称</span><br><span class="line">    position = scrapy.Field()</span><br><span class="line">    # 薪水</span><br><span class="line">    salary = scrapy.Field()</span><br><span class="line">    #公司地点</span><br><span class="line">    place = scrapy.Field()</span><br><span class="line">    #需求</span><br><span class="line">    require = scrapy.Field()</span><br><span class="line">    #学历要求</span><br><span class="line">    education = scrapy.Field()</span><br><span class="line">    #公司名称</span><br><span class="line">    company = scrapy.Field()</span><br><span class="line">    #公司类型</span><br><span class="line">    type = scrapy.Field()</span><br><span class="line">    #融资阶段</span><br><span class="line">    stage = scrapy.Field()</span><br><span class="line">    #公司规模</span><br><span class="line">    scale = scrapy.Field()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>提取网页信息封装item对象  </p>
+</li>
+</ol>
+<p><img src="/images/bossinfo.png" alt=""><br>place、require 、education和type 、stage、scale 分别在图中圈住的位置，在html中在一个p标签中，可以通过如下代码进行提取：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">place,require,education=info.xpath(&quot;//div[@class=&apos;info-primary&apos;]/p/text()&quot;).extract()  </span><br><span class="line">type,stage,scale=info.xpath(&quot;//div[@class=&apos;company-text&apos;]/p/text()&quot;).extract()</span><br></pre></td></tr></table></figure></p>
+<p>但是在爬取过程中发现并非所有的p标签中都是3个字段 。  </p>
+<p><img src="/images/bossinfo01.png" alt="require字段由两部分组成">  </p>
+<p><img src="/images/bossinfo02.png" alt="没有stage（融资阶段）字段  ">  </p>
+<p>所以我们需要对字段的长度进行判断，完整代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">def parse(self, response):</span><br><span class="line">    #提取职位列表</span><br><span class="line">    jobs = response.xpath(&quot;//div[@class=&apos;job-primary&apos;]&quot;).extract()</span><br><span class="line">    #遍历职位列表，提取信息</span><br><span class="line">    for job in jobs:</span><br><span class="line">        positionitem = BosscrawlItem()</span><br><span class="line">        info = scrapy.Selector(text=job)</span><br><span class="line">        positionitem[&apos;position&apos;] =info.xpath(&quot;//div[@class=&apos;job-title&apos;]/text()&quot;).extract_first()</span><br><span class="line">        positionitem[&apos;salary&apos;] = info.xpath(&quot;//span[@class=&apos;red&apos;]/text()&quot;).extract_first()</span><br><span class="line">        info_primary = info.xpath(&quot;//div[@class=&apos;info-primary&apos;]/p/text()&quot;).extract()</span><br><span class="line">        positionitem[&apos;place&apos;] = info_primary[0]</span><br><span class="line">        positionitem[&apos;education&apos;]  =info_primary[-1]</span><br><span class="line">        positionitem[&apos;require&apos;] = info_primary[1]</span><br><span class="line">        if len(info_primary)==4:</span><br><span class="line">            positionitem[&apos;require&apos;]=info_primary[1]+&apos; &apos;+info_primary[2]</span><br><span class="line">        positionitem[&apos;company&apos;] = info.xpath(&quot;//div[@class=&apos;company-text&apos;]/h3/a/text()&quot;).extract_first()</span><br><span class="line">        info_company = info.xpath(&quot;//div[@class=&apos;company-text&apos;]/p/text()&quot;).extract()</span><br><span class="line">        positionitem[&apos;type&apos;] = info_company[0]</span><br><span class="line">        positionitem[&apos;scale&apos;] = info_company[-1]</span><br><span class="line">        positionitem[&apos;stage&apos;]=&apos;&apos;</span><br><span class="line">        if len(info_company)==3:</span><br><span class="line">            positionitem[&apos;stage&apos;]=info_company[1]</span><br><span class="line">        yield positionitem</span><br></pre></td></tr></table></figure></p>
+<ol start="3">
+<li>提取跟进链接<br>链接在最下面的翻页中href中：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">urls =response.xpath(&quot;//div[@class=&apos;page&apos;]/a/@href&quot;).extract()</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><img src="/images/bosspage.png" alt="">  </p>
+<p>其中已经选中的页码的href为<strong>javascript:;</strong>,我们直接跳过，第一个a标签的href为上一页的链接，当你选中第一页时，他的page=0，但是他的内容返回内容是从和page=1的内容是一样的，所以我们遍历的时候从第二个元素开始遍历,之后拼接url并返回：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">     for url in urls[1:]:</span><br><span class="line">         if &apos;javascript&apos;in url:</span><br><span class="line">             continue</span><br><span class="line">         item = &apos;https://www.zhipin.com&apos;+url</span><br><span class="line">         yield scrapy.Request(url=item,callback=self.parse)</span><br><span class="line">```   </span><br><span class="line">4. 数据存储  </span><br><span class="line">在测试阶段，我将数据存储在本地的文件中，之后待测试完毕后存储在mongo数据库中，在pipelines.py中写了两个类**BosscrawlPipeline**,**MongoPipeline**分别用于将数据存储在本地和数据库中，使用的时候在settings中注释即可，这不是这次的重点，所以不做详细介绍。  </span><br><span class="line">5. 其他扩展</span><br><span class="line">为了方便扩展，我将城市code和职位写在了settings中，然后在start_requests中进行遍历，具体的用法可以在[github](https://www.toutiao.com/)中查看：</span><br></pre></td></tr></table></figure></p>
+<pre><code>def start_requests(self):
+    for job in self.settings.get(&apos;QUERY&apos;):
+        for code in self.settings.get(&apos;CITY_CODE&apos;):
+            url =&apos;https://www.zhipin.com/c&apos;+code+&apos;/?query=&apos;+quote(job)+&apos;&amp;page=1&apos;
+            print(url)
+            yield scrapy.Request(url=url,callback=self.parse)
+</code></pre><p><code>`</code><br>此外还可以添加随机的User-Agent的下载中间件，禁用cookies，设置下载延时和自动限速。至此，整个项目就完成了，希望对大家有所帮助。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/06/30/scrapy爬取boss直聘职位信息/" data-id="cjxihtzer0001jwuaerpm59l9"
+         class="article-share-link">Share</a>
+      
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
         <article id="post-scrapyd部署爬虫遇到的问题" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -95,7 +171,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/14/scrapyd部署爬虫遇到的问题/" data-id="cjwvrqlss0004c4uakj4zxn7n"
+      <a data-url="http://yoursite.com/2019/06/14/scrapyd部署爬虫遇到的问题/" data-id="cjxihtzej0000jwuainuqmfx7"
          class="article-share-link">Share</a>
       
     </footer>
@@ -232,7 +308,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/04/分析Ajax爬取今日头条街拍美图/" data-id="cjwvrqlsw0006c4ua0i4ezy5p"
+      <a data-url="http://yoursite.com/2019/06/04/分析Ajax爬取今日头条街拍美图/" data-id="cjxihtzew0003jwuak7h9u21z"
          class="article-share-link">Share</a>
       
     </footer>
@@ -284,7 +360,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjwvrqlsu0005c4uay16wqbsi"
+      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjxihtzg60007jwua3pppkaje"
          class="article-share-link">Share</a>
       
     </footer>
@@ -349,7 +425,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjwvrqlsm0002c4uak4pmh1a4"
+      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjxihtzf20004jwua9fonvxbb"
          class="article-share-link">Share</a>
       
     </footer>
@@ -734,7 +810,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjwvrqlsc0000c4ual592d0r6"
+      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjxihtzf70006jwuaq35rl8nr"
          class="article-share-link">Share</a>
       
     </footer>
@@ -793,7 +869,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjwvrqlsq0003c4uapewawh7a"
+      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjxihtzeu0002jwuaogfv2f17"
          class="article-share-link">Share</a>
       
     </footer>
