@@ -53,7 +53,7 @@
       
 
       
-        <p>27号下午的时候朋友说软考可以查分了，于是我便怀着忐忑的心情去官网查了一下分，说实话当时还是比较紧张的，但是看到成绩时心里总是是松了一口气（甚至还有一些小激动），最终以54分和55分的成绩通过了软件设计师的考试，两个月的学习总算是没有白费。<br>昨天又花了一下午的时间对boss直聘上有关爬虫的职位信息进行了爬取，使用的scrapy框架，项目在我的<a href="https://www.toutiao.com/" target="_blank" rel="noopener">github</a>上，大家可以参考或提出建议。  </p>
+        <p>27号下午的时候朋友说软考可以查分了，于是我便怀着忐忑的心情去官网查了一下分，说实话当时还是比较紧张的，但是看到成绩时心里总是是松了一口气（甚至还有一些小激动），最终以54分和55分的成绩通过了软件设计师的考试，两个月的学习总算是没有白费。<br>昨天又花了一下午的时间对boss直聘上有关爬虫的职位信息进行了爬取，使用的scrapy框架，项目在我的<a href="https://github.com/Clay97/bossCrawl" target="_blank" rel="noopener">github</a>上，大家可以参考或提出建议。  </p>
 <ol>
 <li><p>对<strong>item</strong>进行定义：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">class BosscrawlItem(scrapy.Item):</span><br><span class="line">    # define the fields for your item here like:</span><br><span class="line">    # name = scrapy.Field()</span><br><span class="line">    #职位名称</span><br><span class="line">    position = scrapy.Field()</span><br><span class="line">    # 薪水</span><br><span class="line">    salary = scrapy.Field()</span><br><span class="line">    #公司地点</span><br><span class="line">    place = scrapy.Field()</span><br><span class="line">    #需求</span><br><span class="line">    require = scrapy.Field()</span><br><span class="line">    #学历要求</span><br><span class="line">    education = scrapy.Field()</span><br><span class="line">    #公司名称</span><br><span class="line">    company = scrapy.Field()</span><br><span class="line">    #公司类型</span><br><span class="line">    type = scrapy.Field()</span><br><span class="line">    #融资阶段</span><br><span class="line">    stage = scrapy.Field()</span><br><span class="line">    #公司规模</span><br><span class="line">    scale = scrapy.Field()</span><br></pre></td></tr></table></figure>
@@ -74,7 +74,7 @@
 <p>其中已经选中的页码的href为<strong>javascript:;</strong>,我们直接跳过，第一个a标签的href为上一页的链接，当你选中第一页时，他的page=0，但是他的内容返回内容是从和page=1的内容是一样的，所以我们遍历的时候从第二个元素开始遍历,之后拼接url并返回：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for url in urls[1:]:</span><br><span class="line">    if &apos;javascript&apos;in url:</span><br><span class="line">        continue</span><br><span class="line">    item = &apos;https://www.zhipin.com&apos;+url</span><br><span class="line">    yield scrapy.Request(url=item,callback=self.parse)</span><br></pre></td></tr></table></figure></p>
 <ol start="4">
 <li>数据存储<br>在测试阶段，我将数据存储在本地的文件中，之后待测试完毕后存储在mongo数据库中，在pipelines.py中写了两个类<strong>BosscrawlPipeline</strong>,<strong>MongoPipeline</strong>分别用于将数据存储在本地和数据库中，使用的时候在settings中注释即可，这不是这次的重点，所以不做详细介绍。  </li>
-<li>其他扩展<br>为了方便扩展，我将城市code和职位写在了settings中，然后在start_requests中进行遍历，具体的用法可以在<a href="https://www.toutiao.com/" target="_blank" rel="noopener">github</a>中查看：</li>
+<li>其他扩展<br>为了方便扩展，我将城市code和职位写在了settings中，然后在start_requests中进行遍历，具体的用法可以在<a href="https://github.com/Clay97/bossCrawl" target="_blank" rel="noopener">github</a>中查看：</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def start_requests(self):</span><br><span class="line">    for job in self.settings.get(&apos;QUERY&apos;):</span><br><span class="line">        for code in self.settings.get(&apos;CITY_CODE&apos;):</span><br><span class="line">            url =&apos;https://www.zhipin.com/c&apos;+code+&apos;/?query=&apos;+quote(job)+&apos;&amp;page=1&apos;</span><br><span class="line">            print(url)</span><br><span class="line">            yield scrapy.Request(url=url,callback=self.parse)</span><br></pre></td></tr></table></figure>
 <p>此外还可以添加随机的User-Agent的下载中间件，禁用cookies，设置下载延时和自动限速。至此，整个项目就完成了，希望对大家有所帮助。</p>
@@ -82,7 +82,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/30/scrapy爬取boss直聘职位信息/" data-id="cjxikt6d6000518ua5wiiwsxk"
+      <a data-url="http://yoursite.com/2019/06/30/scrapy爬取boss直聘职位信息/" data-id="cjxilj0dx0005l8uajedtyka0"
          class="article-share-link">Share</a>
       
     </footer>
