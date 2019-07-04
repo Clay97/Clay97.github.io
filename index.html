@@ -57,6 +57,75 @@
 
     
       
+        <article id="post-selenium破解滑动验证码" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2019/07/04/selenium破解滑动验证码/">selenium破解滑动验证码</a>
+    </h2>
+  
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2019/07/04/selenium破解滑动验证码/" class="article-date">
+  <time datetime="2019-07-04T11:25:31.900Z" itemprop="datePublished">2019-07-04</time>
+</a>
+        
+      </div>
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+      
+
+      
+        <p>今天下午研究了一下滑动验证码，并成功破解了滑动验证码，参考<a href="https://www.cnblogs.com/lhhhha/p/11055753.html" target="_blank" rel="noopener">博客</a>,对博客的内容以及自己的理解对代码进行一些改动，代码上传到我的<a href="https://github.com/Clay97/VerificationCode/blob/master/sliderCode.py" target="_blank" rel="noopener">github</a>,大家可以下载参考,下面我大概分析一下思路，希望对大家有所帮助：</p>
+<ol>
+<li>Selenium 对象的初始化<br>因为是用selenium进行模拟人为滑动，所以首先我们需要对Selenium对象初始化并模拟登陆：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">driver = webdriver.Firefox()</span><br><span class="line">   wait = WebDriverWait(driver, 20)</span><br><span class="line">driver.get(&apos;https://account.cnblogs.com/signin?returnUrl=https%3A%2F%2Fwww.cnblogs.com%2F&apos;)</span><br><span class="line"># 1、输入用户名与密码，并点击登录</span><br><span class="line">   email = wait.until(EC.presence_of_element_located((By.ID, &apos;LoginName&apos;)))</span><br><span class="line">   password = wait.until(EC.presence_of_element_located((By.ID, &apos;Password&apos;)))</span><br><span class="line">   email.send_keys(&apos;yourEmail&apos;)</span><br><span class="line">   time.sleep(0.2)</span><br><span class="line">   password.send_keys(&apos;yourPassword&apos;)</span><br><span class="line">   time.sleep(2)</span><br><span class="line">   submit = wait.until(EC.element_to_be_clickable((By.ID, &apos;submitBtn&apos;)))</span><br><span class="line">submit.click()</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>这里的测试网址是博客园的登陆界面，当用户输入用户名和密码后点击登陆时时会跳出滑动验证码。</p>
+<ol start="2">
+<li><p>获取有缺口与完整的图片<br>网页中并没有图片对应的url地址，所以我们需要对整个页面截图然后通过图片位置截取图片来获得我们需要的图片。<br>首先我们需要获得由缺口的图片，因为滑块默认是显示的，他会覆盖在缺口图片上面，所以我们需要将通过js代码隐藏后截图。<br>而完整的图片默认是隐藏的，我们需要用js代码将其显示。<br>之后统一进行截图以及截取操作，方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"># 截取图片</span><br><span class="line">def cut_image(driver, name):</span><br><span class="line">   	#保存页面截图</span><br><span class="line">   	driver.save_screenshot(name)</span><br><span class="line">   	#获取滑动的图片</span><br><span class="line">   	image = driver.find_element_by_class_name(&apos;geetest_canvas_bg&apos;)</span><br><span class="line">   	#获取滑动图片的左 上 右 下的位置</span><br><span class="line">   	left = image.location[&apos;x&apos;]</span><br><span class="line">   	top = image.location[&apos;y&apos;]</span><br><span class="line">   	right = left + image.size[&apos;width&apos;]</span><br><span class="line">   	buttom = top + image.size[&apos;height&apos;]</span><br><span class="line">   	image_obj = Image.open(name)</span><br><span class="line">   	#截图</span><br><span class="line">   	img = image_obj.crop((left, top, right, buttom))</span><br><span class="line">   	return img</span><br><span class="line"></span><br><span class="line"># 获取有缺口的图片</span><br><span class="line">def getImage(driver):</span><br><span class="line">    #影藏滑块</span><br><span class="line">    js_code = &apos;&apos;&apos;</span><br><span class="line">           var x = document.getElementsByClassName(&quot;geetest_canvas_slice&quot;)[0].style.display = &quot;none&quot;;</span><br><span class="line">       &apos;&apos;&apos;</span><br><span class="line">    driver.execute_script(js_code)</span><br><span class="line">    image = cut_image(driver,&apos;img01.png&apos;)</span><br><span class="line">    return image</span><br><span class="line"></span><br><span class="line">#获得完整的图片</span><br><span class="line">def getFullImage(driver):</span><br><span class="line">    #显示完整的图片</span><br><span class="line">    js = &apos;&apos;&apos;</span><br><span class="line">                var x = document.getElementsByClassName(&quot;geetest_canvas_fullbg&quot;)[0].style.display = &quot;block&quot;;</span><br><span class="line">        &apos;&apos;&apos;</span><br><span class="line">    driver.execute_script(js)</span><br><span class="line">    image= cut_image(driver,&apos;img02.png&apos;)</span><br><span class="line">	return image</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>比对两张图片，获取滑动距离<br>通过遍历每一个像素点(起始位置可以从小滑块右侧开始)，比较两张图片的像素点，如果各个像素点的差值小于我们设置的像素差，那么我们认为这两块像素点是一样，直到找个第一个不同的像素点时，我们返回x左边，为了减少误差，我们可以将左中的x减去7个像素后返回：   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">def get_distance(image1, image2):</span><br><span class="line">   	# 比较的起始位置，从小滑块右侧开始比较</span><br><span class="line">   	start = 55</span><br><span class="line">   	# 像素差</span><br><span class="line">   	num = 60</span><br><span class="line">   	for x in range(start, image1.size[0]):</span><br><span class="line">       	for y in range(	image1.size[1]):</span><br><span class="line">           	# 获取image1完整图片每一个坐标的像素点</span><br><span class="line">           	rgb1 = image1.load()[x, y]</span><br><span class="line"></span><br><span class="line">           	# 获取image2缺口图片每一个坐标的像素点</span><br><span class="line">           	rgb2 = image2.load()[x, y]</span><br><span class="line">           	r = abs(rgb1[0] - rgb2[0])</span><br><span class="line">           	g = abs(rgb1[1] - rgb2[1])</span><br><span class="line">           	b = abs(rgb1[2] - rgb2[2])</span><br><span class="line">           	if not (r &lt; num and g &lt; num and b &lt; num):</span><br><span class="line">               	# 有误差 -7 像素</span><br><span class="line">				return x - 7</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根据偏移量获取移动轨迹<br>这里为了模拟认为的移动，我们首先采用匀加速运动，当移动到大于3/5的位置时，开始进行匀减速运动，每0.2我们对移动距离进行计算，并加入到移动轨迹的列表中。之后根据移动轨迹对滑块进行移动：   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">def get_track(distance):</span><br><span class="line">    # 移动轨迹</span><br><span class="line">    track = []</span><br><span class="line">    # 当前位移</span><br><span class="line">    curremt = 0</span><br><span class="line">    # 减速阈值</span><br><span class="line">    mid = distance* 3 / 5</span><br><span class="line">    #计算间隔</span><br><span class="line">    t = 0.2</span><br><span class="line">    # 初速度</span><br><span class="line">    v = 0</span><br><span class="line"></span><br><span class="line">    while curremt &lt; distance:</span><br><span class="line">        if curremt &lt;mid:</span><br><span class="line">            # 加速度 +6</span><br><span class="line">            a = 6</span><br><span class="line">        else:</span><br><span class="line">            #加速度 -7</span><br><span class="line">            a = -8</span><br><span class="line">        # 初速度 v0</span><br><span class="line">        v0 = v</span><br><span class="line">        # 当前速度 v = v0 + at</span><br><span class="line">        v = v0 +a * t</span><br><span class="line">        #移动距离 x = v0t + 1/2 * a * t * t</span><br><span class="line">        move = v0 * t+1/2 * a * t * t</span><br><span class="line">        #当前位移</span><br><span class="line">        curremt +=move</span><br><span class="line">        #加入轨迹</span><br><span class="line">        track.append(round(move))</span><br><span class="line">    return track</span><br><span class="line"></span><br><span class="line">def move_to_gap(driver, tracks):</span><br><span class="line">    slider = driver.find_element_by_class_name(&apos;geetest_slider_button&apos;)</span><br><span class="line">    # 为了观察移动轨迹,显示滑块</span><br><span class="line">    js_code = &apos;&apos;&apos;</span><br><span class="line">               var x = document.getElementsByClassName(&quot;geetest_canvas_slice&quot;)[0].style.display = &quot;block&quot;;</span><br><span class="line">           &apos;&apos;&apos;</span><br><span class="line">    driver.execute_script(js_code)</span><br><span class="line">    time.sleep(2)</span><br><span class="line">    # 点击摁住滑动按钮</span><br><span class="line">    ActionChains(driver).click_and_hold(slider).perform()</span><br><span class="line">    # 根据轨迹移动滑块</span><br><span class="line">    for x in tracks:</span><br><span class="line">        ActionChains(driver).move_by_offset(xoffset=x,yoffset=0).perform()</span><br><span class="line">    # 释放滑块</span><br><span class="line">    ActionChains(driver).release().perform()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>其他优化<br>因为模拟并不能百分百成功，所以我们对当前网页的title进行判断，当页面没有跳转时说明验证码失败，重新获取图片并进行比较模拟滑块登陆，直到验证成功。</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/07/04/selenium破解滑动验证码/" data-id="cjxon0w1c0004uouay39n3nd4"
+         class="article-share-link">Share</a>
+      
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
         <article id="post-scrapy爬取boss直聘职位信息" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -116,7 +185,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/30/scrapy爬取boss直聘职位信息/" data-id="cjxilj0dx0005l8uajedtyka0"
+      <a data-url="http://yoursite.com/2019/06/30/scrapy爬取boss直聘职位信息/" data-id="cjxon0w0r0000uouash6zynyk"
          class="article-share-link">Share</a>
       
     </footer>
@@ -170,7 +239,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/14/scrapyd部署爬虫遇到的问题/" data-id="cjxilj0dv0004l8ua2onujmql"
+      <a data-url="http://yoursite.com/2019/06/14/scrapyd部署爬虫遇到的问题/" data-id="cjxon0w1l0006uoua7xiztv2b"
          class="article-share-link">Share</a>
       
     </footer>
@@ -307,7 +376,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/04/分析Ajax爬取今日头条街拍美图/" data-id="cjxilj0e00006l8ua9imy3kc8"
+      <a data-url="http://yoursite.com/2019/06/04/分析Ajax爬取今日头条街拍美图/" data-id="cjxon0w1f0005uoua0cn6sbqo"
          class="article-share-link">Share</a>
       
     </footer>
@@ -359,7 +428,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjxilj0e20007l8uakkw9cl5o"
+      <a data-url="http://yoursite.com/2019/03/07/安卓文件存储中遇到的问题/" data-id="cjxon0w350007uouahw0ypdyu"
          class="article-share-link">Share</a>
       
     </footer>
@@ -424,7 +493,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjxilj0dg0000l8uahgbzm7sy"
+      <a data-url="http://yoursite.com/2019/03/04/Android第一行代码 酷欧天气总结/" data-id="cjxon0w3n0008uoua3be77zli"
          class="article-share-link">Share</a>
       
     </footer>
@@ -809,7 +878,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjxilj0dp0002l8uao3mawfgt"
+      <a data-url="http://yoursite.com/2018/07/01/Android常见控件/" data-id="cjxon0w120002uouaxpcq020q"
          class="article-share-link">Share</a>
       
     </footer>
@@ -868,7 +937,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjxilj0ds0003l8ua744xfdkt"
+      <a data-url="http://yoursite.com/2018/07/01/hello-world/" data-id="cjxon0w180003uoua8g6y4zhq"
          class="article-share-link">Share</a>
       
     </footer>
